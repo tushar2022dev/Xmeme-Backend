@@ -7,20 +7,33 @@ const userCollection = require('./UserCollection')
 const middle = require('./multer')
 const dotenv = require('dotenv')
 const e = require('express')
+const bodyParser = require('body-parser')
+const { urlencoded, json } = require('express')
 
 
 dotenv.config()
 const app = express()
 app.use(express.json())
 app.listen(PORT)
-app.use('/uploads',verifyToken,express.static('uploads'))
+app.use('/uploads',express.static('uploads'))
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({extended:true}))
 
 console.log('Server started on PORT:'+PORT)
 
 
+
+
+app.use( (req, res, next)=> {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, authorization");
+    next();
+});
+
+
 //                      --------      GET API's   ---------
 
-app.get('/profile',verifyToken,(req,res)=>{  
+app.get('/profile',verifyToken,(req,res)=>{  // sends back user details
     
     const user = req.user
     res.send({
@@ -30,25 +43,26 @@ app.get('/profile',verifyToken,(req,res)=>{
 
 
 
-app.get('/feed',async (req,res)=>{   //    returns memes to show in user feed 
+
+app.get('/feed',verifyToken,async (req,res)=>{   //    returns memes to show in user feed 
     
     console.log('GET request recieved!')
     const conn =await database()
-    conn.find().sort({"dateTime":-1}).limit(100).toArray().then((data)=>{res.send(data)})
+    conn.find().sort({"dateTime":-1}).limit(100).toArray().then((data)=>{res.send({"status":1, data})})
 
 })
 
 
-
 function verifyToken(req,res,next){             // middleware for jwt token verification 
     const token = req.headers['authorization']
+    console.log(token)
     if(!token){
        res.send({
           "status":0,
           "message":"Token not found!"
        })
     }
-  
+    
     jwt.verify(token,process.env.JWT_SECRET,(err,authData)=>{
       if(err){
   
@@ -57,7 +71,7 @@ function verifyToken(req,res,next){             // middleware for jwt token veri
            "message":"Invalid Token!"
        })
       }
-      else{
+      else{            // if jwt valid then attach user data with request
   
        const userData = authData.user
        req.user = userData
@@ -75,7 +89,9 @@ function verifyToken(req,res,next){             // middleware for jwt token veri
 
 app.post('/signup',async (req,res)=>{   //   we get a username(unique) ,real name , password  and we store user credentials 
     const conn = await userCollection()
-
+    console.log("signup request recieved!")
+    console.log(req.body.name)
+    console.log(req.body)
     if((await conn.find({"username":req.body.username}).toArray()).length){
         const negativeResponse = {
             "status":0,
@@ -89,6 +105,7 @@ app.post('/signup',async (req,res)=>{   //   we get a username(unique) ,real nam
          "username":req.body.username,
           "name":req.body.name,
           "password":req.body.password,
+          "email":req.body.email,
           "meme_count":0            
        }
        await conn.insertOne(newUser)
@@ -115,18 +132,19 @@ app.post('/login',async (req,res)=>{
         }
         res.send(negativeResponse)
     }
+
     else{
     
     let user = userArr[0]
     delete user.password
     delete user._id
 
-    jwt.sign({user},process.env.JWT_SECRET,{expiresIn: '300s'},(err,token)=>{   //  the user is valid ,hence we return the jwt token
+    jwt.sign({user},process.env.JWT_SECRET,{expiresIn: '3000s'},(err,token)=>{   //  the user is valid ,hence we return the jwt token
 
         console.log(token+" Returned !!")
          res.json({
             "status":1,
-            token
+            "jwt":JSON.stringify(token)
          })
     })}
 
@@ -134,15 +152,19 @@ app.post('/login',async (req,res)=>{
 
 
 
-app.post('/upload',middle,verifyToken,async(req,res)=>{  // insert meme details in the mongodb database 
+app.post('/upload',verifyToken,middle,async(req,res)=>{  // insert meme details in the mongodb database 
    
+
    console.log('POST request recieved!')
    const conn = await database()
+
    let obj = {
-   "posted_by": req.user.username,
-   "img_link" : process.env.UNIQUE_FNAME,
+   "username": req.user.username,
+   "image" : process.env.UNIQUE_FNAME,
+   "caption": req.body.caption,
    "dateTime" : Date.now(),
    }
+   console.log(obj)
    const result = await conn.insertOne(obj)
    if(result.acknowledged){
     res.send({

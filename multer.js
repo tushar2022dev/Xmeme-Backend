@@ -11,14 +11,14 @@ const upload = multer({
           cb(null,"uploads");
       },
       filename:function(req,file,cb)   // setting up filename: unique for each file
-      {
-          let tempName = file.filename+"-"+Date.now()+".jpg";
+      {   console.log("file")
+          let tempName = "IMG-"+Date.now()+".jpg";
           cb(null,tempName);
           
           process.env.UNIQUE_FNAME  = "http://localhost:5000/uploads/"+tempName;  // setting name in env variable and storing in database
       }
     })
 
-}).single("meme_img");
+}).single("image");
 
 module.exports = upload;

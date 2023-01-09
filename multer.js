@@ -15,7 +15,7 @@ const upload = multer({
           let tempName = "IMG-"+Date.now()+".jpg";
           cb(null,tempName);
           
-          process.env.UNIQUE_FNAME  = "http://localhost:5000/uploads/"+tempName;  // setting name in env variable and storing in database
+          process.env.UNIQUE_FNAME  = process.env.URL+"/uploads/"+tempName;  // setting name in env variable and storing in database
       }
     })
 

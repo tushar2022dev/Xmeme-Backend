@@ -1,7 +1,7 @@
 
 const {MongoClient} = require('mongodb')
 const dbConnect = require('./database')
-const url = 'mongodb+srv://megamind:ideamongo@cluster0.mfx7n5a.mongodb.net/?retryWrites=true&w=majority'
+const url = `mongodb+srv://megamind:${process.env.MONGO_PASS}@cluster0.mfx7n5a.mongodb.net/?retryWrites=true&w=majority`
 const dbName = 'XMeme'
 const collectionName = 'UserInfo'
 

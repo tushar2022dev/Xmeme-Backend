@@ -14,7 +14,8 @@ const { urlencoded, json } = require('express')
 dotenv.config()
 const app = express()
 app.use(express.json())
-app.listen(PORT)
+const hostname = '0.0.0.0'
+app.listen(PORT,hostname)
 app.use('/uploads',express.static('uploads'))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended:true}))
@@ -54,6 +55,12 @@ app.get('/feed',verifyToken,async (req,res)=>{   //    returns memes to show in 
 
 
 function verifyToken(req,res,next){             // middleware for jwt token verification 
+    if(!req.headers){
+        res.send({
+           "status":0,
+           "message":"Token not found!"
+        })
+     }
     const token = req.headers['authorization']
     console.log(token)
     if(!token){

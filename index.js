@@ -9,7 +9,7 @@ const dotenv = require('dotenv')
 const e = require('express')
 const bodyParser = require('body-parser')
 const { urlencoded, json } = require('express')
-
+const cloudinary = require('./cloudinary')
 
 dotenv.config()
 const app = express()
@@ -131,8 +131,11 @@ app.post('/signup',async (req,res)=>{   //   we get a username(unique) ,real nam
 app.post('/login',async (req,res)=>{
 
     const conn =await userCollection()
+    console.log(req.body.username)
+    console.log(await conn.find().toArray())
     let userArr = await conn.find({"username":req.body.username, "password":req.body.password}).toArray()
     if( userArr.length == 0){                    // incorrect username or password
+        console.log('here')
         const negativeResponse={
             "status":0,
             "message":'Please check username and Password!'
@@ -159,6 +162,11 @@ app.post('/login',async (req,res)=>{
 
 
 
+
+
+
+
+
 app.post('/upload',verifyToken,middle,async(req,res)=>{  // insert meme details in the mongodb database 
    
 
@@ -167,10 +175,16 @@ app.post('/upload',verifyToken,middle,async(req,res)=>{  // insert meme details 
 
    let obj = {
    "username": req.user.username,
-   "image" : process.env.UNIQUE_FNAME,
    "caption": req.body.caption,
    "dateTime" : Date.now(),
    }
+
+   console.log(req.file)
+  await cloudinary.v2.uploader.upload(req.file.path,
+  { folder:"xmeme_meme" }, 
+  function(error, result) {obj.image = result.secure_url });
+     
+
    console.log(obj)
    const result = await conn.insertOne(obj)
    if(result.acknowledged){

@@ -1,9 +1,11 @@
 
 const {MongoClient} = require('mongodb')
-const dbConnect = require('./database')
+const dotenv = require('dotenv')
+dotenv.config()
 const url = `mongodb+srv://megamind:${process.env.MONGO_PASS}@cluster0.mfx7n5a.mongodb.net/?retryWrites=true&w=majority`
 const dbName = 'XMeme'
 const collectionName = 'UserInfo'
+
 
 const client = new MongoClient(url)
 

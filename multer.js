@@ -1,7 +1,6 @@
 // middleware to accept data in form of file
 
 const multer = require('multer')
-const path = require('path')
 
 
 const upload = multer({
@@ -20,5 +19,7 @@ const upload = multer({
     })
 
 }).single("image");
+
+
 
 module.exports = upload;

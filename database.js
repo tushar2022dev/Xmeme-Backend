@@ -1,9 +1,12 @@
    // this file is used to connect node to our mongodb database
 
 const {MongoClient} = require('mongodb')
+const dotenv = require('dotenv')
+dotenv.config()
 const url =`mongodb+srv://megamind:${process.env.MONGO_PASS}@cluster0.mfx7n5a.mongodb.net/?retryWrites=true&w=majority`
 const dbName = 'XMeme'
 const collectionName = 'MemeInfo'
+
 
 const client = new MongoClient(url)
 

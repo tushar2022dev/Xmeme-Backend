@@ -42,7 +42,11 @@ app.get('/profile',verifyToken,(req,res)=>{  // sends back user details
         user})
 })
 
+app.get('/',async (req,res)=>{   //    returns memes to show in user feed 
+    
+    res.send("Hi ! This is Xmeme . A meme stream web service. Connect with the frontend to view the application")
 
+})
 
 
 app.get('/feed',verifyToken,async (req,res)=>{   //    returns memes to show in user feed 

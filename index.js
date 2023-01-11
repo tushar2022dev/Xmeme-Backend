@@ -10,7 +10,7 @@ const e = require('express')
 const bodyParser = require('body-parser')
 const { urlencoded, json } = require('express')
 const cloudinary = require('./cloudinary')
-
+const msgdb = require('./messageDB')
 dotenv.config()
 const app = express()
 app.use(express.json())
@@ -162,7 +162,31 @@ app.post('/login',async (req,res)=>{
 
 
 
+app.post('/message',async(req,res)=>{
 
+   console.log('message request recieved!')
+   const conn = await msgdb()
+   let obj = {
+     "name":req.body.name,
+     "mail":req.body.mail,
+     "message":req.body.message
+   }
+   const result = await conn.insertOne(obj)
+
+
+   if(result.acknowledged){
+    res.send({
+        "status":1,
+        "message":"message saved!"
+    })
+   }
+   else{
+    res.send({
+        "status":0,
+        "message":"message not saved"
+    })
+   }
+})
 
 
 

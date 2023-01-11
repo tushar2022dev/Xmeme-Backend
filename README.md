@@ -6,5 +6,6 @@
 • Used Express.js to build GET and POST API endpoints <br>
 • Used MongoDB Atlas to store meme info , user details and messages online.  <br>
 • Used JWT Authentication for userlogin authentication <br>
-• Used cloudniary cloud service to store meme images on the cloud
+• Used cloudniary cloud service to store meme images on the cloud <br>
+• Deployed on render.com  ( https://xmeme-i4d8.onrender.com )
 

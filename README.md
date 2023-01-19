@@ -8,4 +8,7 @@
 • Used JWT Authentication for userlogin authentication <br>
 • Used cloudniary cloud service to store meme images on the cloud <br>
 • Deployed on render.com  ( https://xmeme-i4d8.onrender.com )
+• Source code of front-end ( https://github.com/tushar2022dev/Xmeme-Frontend )
+
+-> Visit Xmeme ( https://xmeme1.netlify.app ) 
 
